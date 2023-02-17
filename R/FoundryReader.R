@@ -61,8 +61,9 @@ FoundryReader <-
 
         if (result$metadata$rowCount > 0) {
           df <- result$rows %>%
-            dplyr::as_tibble() %>%
-            magrittr::set_colnames(result$metadata$columns)
+            magrittr::set_colnames(result$metadata$columns) %>%
+            dplyr::as_tibble()
+
 
         } else {
           futile.logger::flog.warn(

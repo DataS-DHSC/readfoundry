@@ -1,5 +1,5 @@
 Package: readfoundry
-Title: Wrapper for accesing data from Foundry SparkSQL server.
+Title: Wrapper for accesing data from Foundry SparkSQL server
 Version: 0.0.0.9000
 Authors@R: 
     person("Matthew", "Katz", , "matthew.katz@dhsc.gov.uk", role = c("aut", "cre"))
