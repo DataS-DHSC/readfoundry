@@ -110,7 +110,7 @@ FoundryReader <-
                 "FROM \"%s\"",
                 "LIMIT 10"
               ),
-              private$.dataset_path
+              dataset_path
             )
 
           dplyr::copy_to(
@@ -144,6 +144,33 @@ FoundryReader <-
           stringr::str_replace_all("\n", " ") %>%
           stringr::str_replace_all("FROM `(.+?)`", "FROM \"\\1\"") %>%
           stringr::str_replace_all("`", "")
+
+        # execute SQL
+        return(
+          self$run_query(sql_query)
+        )
+      },
+
+      #' @description
+      #' Get tibble of metrics along with summary statistics.
+      #' @param dataset_path (`character()`)\cr
+      #' full Foundry path to dataset of the type "/path/to/dataset".
+      #' @return A tibble of metrics and their statistics.
+      get_metrics = function(dataset_path) {
+        sql_query <-
+          sprintf(
+            paste(
+              "SELECT",
+              "metric_name, metric_description, location_type,",
+              "COUNT(*) AS count_rows,",
+              "MAX(date) AS max_date, MIN(date) AS min_date,",
+              "APPROX_COUNT_DISTINCT(location_id) AS count_locations",
+              "FROM \"%s\"",
+              "GROUP BY metric_name, metric_description, location_type",
+              "ORDER BY metric_name, metric_description, location_type"
+            ),
+            dataset_path
+          )
 
         # execute SQL
         return(
@@ -341,7 +368,9 @@ FoundryReader <-
         result <- list()
 
         if (private$.parse_response()) {
-          # drop first character that is an "S"
+          # drop first "control" character - "S" for sting?
+          # might be more efficient to use an arrow stream
+          # but unclear how to implement in R
           result <-
             httr::content(
               private$.response,

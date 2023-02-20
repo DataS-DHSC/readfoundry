@@ -27,6 +27,7 @@ futile.logger::flog.threshold(
 \item \href{#method-FoundryReader-run_query}{\code{FoundryReader$run_query()}}
 \item \href{#method-FoundryReader-get_dataset}{\code{FoundryReader$get_dataset()}}
 \item \href{#method-FoundryReader-collect}{\code{FoundryReader$collect()}}
+\item \href{#method-FoundryReader-get_metrics}{\code{FoundryReader$get_metrics()}}
 \item \href{#method-FoundryReader-get_last_error}{\code{FoundryReader$get_last_error()}}
 \item \href{#method-FoundryReader-get_log_name}{\code{FoundryReader$get_log_name()}}
 \item \href{#method-FoundryReader-finalize}{\code{FoundryReader$finalize()}}
@@ -118,6 +119,27 @@ The transformed output of \code{FoundryReader::get_dataset(dataset_path)}.}
 }
 \subsection{Returns}{
 A tibble of the retrieved data.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-FoundryReader-get_metrics"></a>}}
+\if{latex}{\out{\hypertarget{method-FoundryReader-get_metrics}{}}}
+\subsection{Method \code{get_metrics()}}{
+Get tibble of metrics along with summary statistics.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{FoundryReader$get_metrics(dataset_path)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{dataset_path}}{(\code{character()})\cr
+full Foundry path to dataset of the type "/path/to/dataset".}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A tibble of metrics and their statistics.
 }
 }
 \if{html}{\out{<hr>}}

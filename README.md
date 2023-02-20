@@ -27,8 +27,10 @@ projects `.Renviron` file under the key “BEARER” (see examples below).
 To then run raw SQL call:
 
 ``` r
+# create connection
 fapi <- readfoundry::FoundryReader$new(Sys.getenv("BEARER"))
 
+# SparkSQL query to run
 sql_query <- 
   paste(
     "SELECT",
@@ -36,7 +38,8 @@ sql_query <-
     "FROM \"/path/to/dataset\"",
     "WHERE metric_name IN ('example', 'metric', 'names')"
   )
-  
+
+# get query results
 df <- fapi$run_query(sql_query)
 ```
 
@@ -46,8 +49,13 @@ transforming your data collect the results by calling `fapi$collect()`,
 e.g.:
 
 ``` r
+# create connection
 fapi <- readfoundry::FoundryReader$new(Sys.getenv("BEARER"))
 
+# get details of metrics available
+df_stats <- fapi$get_metrics("path/to/dataset")
+
+# get transformed data
 df <- fapi$get_dataset("path/to/dataset") %>%
   filter(metric_name == "example_name") %>%
   fapi$collect()
