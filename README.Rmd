@@ -23,10 +23,11 @@ server or can be used with `dbplyr` to enable generation of SQL.
 
 ## Installation
 
-You can install the development version of readfoundry like so:
+You can install the readfoundry package like so:
 
 ``` r
-remotes::install_github("DataS-DHSC/readfoundry")
+if (!requireNamespace("librarian")) install.packages("librarian")
+librarian::shelf(DataS-DHSC/readfoundry)
 ```
 
 ## Usage
