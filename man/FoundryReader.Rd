@@ -106,13 +106,13 @@ A \code{dplyr} remote source table.
 \subsection{Method \code{collect()}}{
 Retrieves data into a local tibble from the Foundry API.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{FoundryReader$collect(db_query)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{FoundryReader$collect(sql_df)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{db_query}}{a lazy dataframe \cr
+\item{\code{sql_df}}{a lazy SQL data frame \cr
 The transformed output of \code{FoundryReader::get_dataset(dataset_path)}.}
 }
 \if{html}{\out{</div>}}

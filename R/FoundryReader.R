@@ -17,6 +17,13 @@ FoundryReader <-
       #' name of log to write to.
       #' @return A new `FoundryReader` object.
       initialize = function(token, log_name = "dhsc_data_store.FoundryReader") {
+        stopifnot(
+          "`token` must be a character string" = is.character(token)
+        )
+
+        stopifnot(
+          "`log_name` must be a character string" = is.character(log_name)
+        )
         private$.token <- paste("Bearer", token)
         private$.log_name <- log_name
 
@@ -33,6 +40,9 @@ FoundryReader <-
       #' SparkSQL query to run.
       #' @return A tibble of the query results.
       run_query = function(sql_query) {
+        stopifnot(
+          "`sql_query` must be a character string" = is.character(sql_query)
+        )
 
         futile.logger::flog.info(
           "Executing SQL: %s",
@@ -76,7 +86,7 @@ FoundryReader <-
             dplyr::as_tibble()
         }
 
-        # return a dataframe version of data, with an empty but correctly
+        # return a data frame version of data, with an empty but correctly
         # formatted tibble if no data returned
         return(
           df %>%
@@ -90,6 +100,11 @@ FoundryReader <-
       #' full Foundry path to dataset of the type "/path/to/dataset".
       #' @return A `dplyr` remote source table.
       get_dataset = function(dataset_path) {
+        stopifnot(
+          "`dataset_path` must be a character string" =
+            is.character(dataset_path)
+        )
+
         # create in memory RSQlite database if needed
         if (is.null(private$.con_memdb)) {
           private$.con_memdb <-
@@ -132,15 +147,20 @@ FoundryReader <-
 
       #' @description
       #' Retrieves data into a local tibble from the Foundry API.
-      #' @param db_query a lazy dataframe \cr
+      #' @param sql_df a lazy SQL data frame \cr
       #' The transformed output of `FoundryReader::get_dataset(dataset_path)`.
       #' @return A tibble of the retrieved data.
-      collect = function(db_query) {
+      collect = function(sql_df) {
+        stopifnot(
+         "`sql_df` must be a lazy SQL data frame" =
+           "tbl_sql" %in% class(sql_df)
+        )
+
         # Correct for differences between RSQLite and SparkSQL SQL
         # remove newlines
         # surrounded dataset path in double quotes
         # remove back ticks around variable names
-        sql_query <- dbplyr::sql_render(db_query) %>%
+        sql_query <- dbplyr::sql_render(sql_df) %>%
           stringr::str_replace_all("\n", " ") %>%
           stringr::str_replace_all("FROM `(.+?)`", "FROM \"\\1\"") %>%
           stringr::str_replace_all("`", "")
@@ -157,6 +177,11 @@ FoundryReader <-
       #' full Foundry path to dataset of the type "/path/to/dataset".
       #' @return A tibble of metrics and their statistics.
       get_metrics = function(dataset_path) {
+        stopifnot(
+          "`dataset_path` must be a character string" =
+            is.character(dataset_path)
+        )
+
         sql_query <-
           sprintf(
             paste(
