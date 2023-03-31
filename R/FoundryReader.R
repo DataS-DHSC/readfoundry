@@ -128,9 +128,12 @@ FoundryReader <-
               dataset_path
             )
 
+          df <- self$run_query(sql_query)
+          if (is.null(df)) return(NULL)
+
           dplyr::copy_to(
             private$.con_memdb,
-            self$run_query(sql_query),
+            df,
             name = dataset_path
           )
 
