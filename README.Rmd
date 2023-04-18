@@ -31,10 +31,11 @@ librarian::shelf(DataS-DHSC/readfoundry)
 ```
 
 ## Usage
-To use the package you will need the path to the dataset you want to query as 
-well as a BEARER token from your Foundry session that has permission to export
-this dataset. This token can then be saved in your projects `.Renviron` file 
-under the key "BEARER" (see examples below).
+To use the package you will need the path to the dataset you want to query 
+([Identify a dataset's RID or filepath • Palantir](https://www.palantir.com/docs/foundry/analytics-connectivity/identify-dataset-rid/)) as well as a BEARER token from your Foundry session that has permission to export
+this dataset ([User-generated tokens • Palantir](https://www.palantir.com/docs/foundry/platform-security-third-party/user-generated-tokens/)). This token should be 
+saved in your projects `.Renviron` file under the key "BEARER" (please do not 
+add your `.REnviron` file to version control).
 
 To then run raw SQL call:
 ``` r
