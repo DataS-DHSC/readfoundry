@@ -63,6 +63,7 @@ FoundryReader <-
               type == "DOUBLE" ~"d",
               type == "DATE" ~"D",
               type == "LONG" ~"i",
+              type == "INTEGER" ~"i",
               TRUE ~"c"
             )
           ) %>%
