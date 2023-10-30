@@ -164,7 +164,19 @@ FoundryReader <-
         # surrounded dataset path in double quotes
         # remove back ticks around variable names
         sql_query <- dbplyr::sql_render(sql_df) %>%
-          stringr::str_replace_all("\n", " ") %>%
+          stringr::str_replace_all("\n", " ")
+
+        table_name <- stringr::str_extract(
+          sql_query,
+          "FROM `(.+?)`",
+          group = 1
+        )
+
+        sql_query <- sql_query %>%
+          stringr::str_replace_all(
+            sprintf("`%s`\\.", table_name),
+            ""
+          ) %>%
           stringr::str_replace_all("FROM `(.+?)`", "FROM \"\\1\"") %>%
           stringr::str_replace_all("`", "")
 
