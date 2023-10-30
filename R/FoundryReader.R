@@ -63,6 +63,7 @@ FoundryReader <-
               type == "DOUBLE" ~"d",
               type == "DATE" ~"D",
               type == "LONG" ~"i",
+              type == "INTEGER" ~"i",
               TRUE ~"c"
             )
           ) %>%
@@ -90,6 +91,7 @@ FoundryReader <-
         # formatted tibble if no data returned
         return(
           df %>%
+            dplyr::mutate(dplyr::across(dplyr::everything(), as.character)) %>%
             readr::type_convert(col_types = col_codes)
         )
       },
