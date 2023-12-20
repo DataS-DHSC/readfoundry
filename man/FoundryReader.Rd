@@ -25,6 +25,7 @@ futile.logger::flog.threshold(
 \itemize{
 \item \href{#method-FoundryReader-new}{\code{FoundryReader$new()}}
 \item \href{#method-FoundryReader-run_query}{\code{FoundryReader$run_query()}}
+\item \href{#method-FoundryReader-parse_query_json}{\code{FoundryReader$parse_query_json()}}
 \item \href{#method-FoundryReader-get_dataset}{\code{FoundryReader$get_dataset()}}
 \item \href{#method-FoundryReader-collect}{\code{FoundryReader$collect()}}
 \item \href{#method-FoundryReader-get_metrics}{\code{FoundryReader$get_metrics()}}
@@ -64,7 +65,7 @@ A new \code{FoundryReader} object.
 \subsection{Method \code{run_query()}}{
 Run a SparkSQL query through the Foundry API.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{FoundryReader$run_query(sql_query)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{FoundryReader$run_query(sql_query, parse_json = TRUE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -72,6 +73,30 @@ Run a SparkSQL query through the Foundry API.
 \describe{
 \item{\code{sql_query}}{(\code{character()})\cr
 SparkSQL query to run.}
+
+\item{\code{parse_json}}{(\code{logical()})\cr
+If the server returns a json should we parse into a tibble}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Either a tibble or json of the query results.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-FoundryReader-parse_query_json"></a>}}
+\if{latex}{\out{\hypertarget{method-FoundryReader-parse_query_json}{}}}
+\subsection{Method \code{parse_query_json()}}{
+Parse a returned query JSON into a tibble.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{FoundryReader$parse_query_json(query_json)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{query_json}}{(\code{character()})\cr
+Query JSON to parse.}
 }
 \if{html}{\out{</div>}}
 }

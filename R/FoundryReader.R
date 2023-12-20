@@ -38,8 +38,10 @@ FoundryReader <-
       #' Run a SparkSQL query through the Foundry API.
       #' @param sql_query (`character()`)\cr
       #' SparkSQL query to run.
-      #' @return A tibble of the query results.
-      run_query = function(sql_query) {
+      #' @param parse_json (`logical()`)\cr
+      #' If the server returns a json should we parse into a tibble
+      #' @return Either a tibble or json of the query results.
+      run_query = function(sql_query, parse_json = TRUE) {
         stopifnot(
           "`sql_query` must be a character string" = is.character(sql_query)
         )
@@ -55,8 +57,38 @@ FoundryReader <-
 
         if (is.null(result)) return(NULL)
 
+        return_data <- result$data
+
+        if (result$control_byte == "s") {
+          if (result$data$metadata$rowCount == 0) {
+            futile.logger::flog.warn(
+              "Query returned no rows", name = private$.log_name
+            )
+          }
+
+          if (parse_json) {
+            return_data <- self$parse_query_json(return_data)
+          }
+        } else if (result$control_byte == "a") {
+          if (nrow(return_data) == 0) {
+            futile.logger::flog.warn(
+              "Query returned no rows", name = private$.log_name
+            )
+          }
+        }
+
+        return(return_data)
+      },
+
+      #' @description
+      #' Parse a returned query JSON into a tibble.
+      #' @param query_json (`character()`)\cr
+      #' Query JSON to parse.
+      #' @return A tibble of the query results.
+      parse_query_json = function(query_json) {
+
         # leave any unknown column types as character
-        col_codes <- result$metadata$columnTypes %>%
+        col_codes <- query_json$metadata$columnTypes %>%
           dplyr::mutate(
             col_code = dplyr::case_when(
               type == "STRING" ~"c",
@@ -70,20 +102,13 @@ FoundryReader <-
           .$col_code %>%
           paste(collapse = "")
 
-        if (result$metadata$rowCount > 0) {
-          df <- result$rows %>%
-            magrittr::set_colnames(result$metadata$columns) %>%
+        if (query_json$metadata$rowCount > 0) {
+          df <- query_json$rows %>%
+            magrittr::set_colnames(query_json$metadata$columns) %>%
             dplyr::as_tibble()
-
-
         } else {
-          futile.logger::flog.warn(
-            "Query returned no rows, returning empty tibble",
-            name = private$.log_name
-          )
-
           # create empty version of table
-          df <- sapply(result$metadata$columns, function(x) character()) %>%
+          df <- sapply(query_json$metadata$columns, function(x) character()) %>%
             dplyr::as_tibble()
         }
 
@@ -180,7 +205,8 @@ FoundryReader <-
             ""
           ) %>%
           stringr::str_replace_all("FROM `(.+?)`", "FROM \"\\1\"") %>%
-          stringr::str_replace_all("`", "")
+          stringr::str_replace_all("`", "") %>%
+          stringr::str_replace_all("''", "'")
 
         # execute SQL
         return(
@@ -407,20 +433,32 @@ FoundryReader <-
           )
         )
 
-        result <- list()
+        result <- NULL
 
         if (private$.parse_response()) {
-          # drop first "control" character - "S" for sting?
-          # might be more efficient to use an arrow stream
-          # but unclear how to implement in R
-          result <-
+          result <- list()
+
+          # read initial byte of response to determine type
+          result_raw <-
             httr::content(
               private$.response,
-              as = "text",
-              encoding = "UTF-8"
-            ) %>%
-            stringr::str_sub(2) %>%
-            jsonlite::fromJSON()
+              as = "raw"
+            )
+
+          result$control_byte <- tolower(rawToChar(result_raw[[1]]))
+          result_raw <- result_raw[2:length(result_raw)]
+
+          # control codes
+          # s = json; a = arrow; other = ?
+          if (result$control_byte == "s") {
+            result$data <- readBin(result_raw, character()) %>%
+              jsonlite::fromJSON()
+          } else if (result$control_byte == "a") {
+            result$data <- arrow::read_ipc_stream(result_raw) %>%
+              dplyr::as_tibble()
+          } else {
+            stop(sprintf("Unknown encoding %s", result$control_byte))
+          }
         }
 
         return(result)
