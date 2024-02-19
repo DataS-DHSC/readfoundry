@@ -201,7 +201,7 @@ FoundryReader <-
 
         sql_query <- sql_query %>%
           stringr::str_replace_all(
-            sprintf("`%s`\\.", table_name),
+            stringr::fixed(sprintf("`%s`.", table_name)),
             ""
           ) %>%
           stringr::str_replace_all("FROM `(.+?)`", "FROM \"\\1\"") %>%
