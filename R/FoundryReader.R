@@ -278,7 +278,7 @@ FoundryReader <-
     ),
     private = list(
       # base endpoint url of the api
-      .url = "https://ppds.palantirfoundry.co.uk/foundry-sql-server/api/queries",
+      .url = "https://england.federateddataplatform.nhs.uk/foundry-sql-server/api/queries",
 
       # query id assigned by SQL server
       .query_id = NULL,
